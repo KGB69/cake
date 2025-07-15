@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: cakelandia
+    env: node
+    buildCommand: npm install --include=dev && npm run build
+    startCommand: npm start
+    envVars:
+      - key: ADMIN_USERNAME
+        value: admin
+      - key: ADMIN_PASSWORD
+        value: cakelandia2025
+      - key: NODE_ENV
+        value: production
