@@ -32,12 +32,15 @@ export default async function handler(
       fs.mkdirSync(uploadsDir, { recursive: true });
     }
 
+    console.log('Processing image upload');
     const result = await processFormData(req, uploadsDir);
     
     if (!result.success) {
+      console.error('Upload failed:', result.message);
       return res.status(400).json({ message: result.message });
     }
 
+    console.log('Upload successful:', result.fileUrl);
     return res.status(200).json({ fileUrl: result.fileUrl });
   } catch (error) {
     console.error('Upload error:', error);
@@ -48,6 +51,7 @@ export default async function handler(
 // Process form data and resize/save the file
 function processFormData(req: NextApiRequest, uploadDir: string): Promise<ProcessedFiles> {
   return new Promise((resolve, reject) => {
+    console.log('Starting form parsing');
     const form = formidable({
       uploadDir,
       keepExtensions: true,
@@ -57,20 +61,39 @@ function processFormData(req: NextApiRequest, uploadDir: string): Promise<Proces
       }
     });
 
-    form.parse(req, async (err: Error | null, fields: formidable.Fields, files: formidable.Files) => {
+    form.parse(req, async (err: Error | null, fields: any, files: any) => {
       if (err) {
+        console.error('Form parsing error:', err);
         return resolve({ success: false, message: 'Error parsing form data' });
       }
 
-      const fileArray = files.image as formidable.File[];
+      console.log('Files received type:', typeof files, 'Fields received:', fields);
+      console.log('Files content:', JSON.stringify(files, null, 2));
       
-      if (!fileArray || fileArray.length === 0) {
-        return resolve({ success: false, message: 'No image provided' });
+      if (!files || !files.image) {
+        console.error('No image field in upload');
+        return resolve({ success: false, message: 'No image provided in form' });
       }
-
-      const file = fileArray[0];
+      
+      // Handle both array and single file cases
+      let file;
+      if (Array.isArray(files.image)) {
+        console.log('Image field is array with length:', files.image.length);
+        if (files.image.length === 0) {
+          console.error('Empty image array');
+          return resolve({ success: false, message: 'Empty image array' });
+        }
+        file = files.image[0];
+      } else {
+        console.log('Image field is a single file object');
+        file = files.image;
+      }
+      
+      console.log('Processing file:', file);
+      console.log('File properties:', Object.keys(file));
       
       if (!file.mimetype?.includes('image')) {
+        console.error('File is not an image');
         return resolve({ success: false, message: 'File is not an image' });
       }
 
@@ -96,6 +119,7 @@ function processFormData(req: NextApiRequest, uploadDir: string): Promise<Proces
         
         // Return the relative URL to the file
         const fileUrl = `/uploads/${newFilename}`;
+        console.log('Image processed successfully:', fileUrl);
         resolve({ success: true, fileUrl });
       } catch (error) {
         console.error('Error processing image:', error);

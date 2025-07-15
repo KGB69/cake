@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "id": "prod_1752612481046",
+    "name": "Cake 3",
+    "price": 9,
+    "description": "Yum",
+    "image": "/uploads/image-1752612480947.jpeg",
+    "category": "Snack",
+    "stock": 4,
+    "featured": true
+  }
+]

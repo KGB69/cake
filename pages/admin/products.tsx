@@ -50,25 +50,58 @@ export default function AdminProducts() {
     if (!isLoggedIn) {
       router.push('/admin');
     } else {
-      fetchProducts(currentPage);
+      fetchProducts();
     }
-  }, [router, currentPage]);
+  }, [router]);
+
+  // Update state and fetch products on component mount
+  useEffect(() => {
+    fetchProducts();
+  }, [currentPage]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
-  const fetchProducts = async (page = 1) => {
+  const fetchProducts = async () => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      const res = await fetch(`/api/products?page=${page}&limit=${productsPerPage}`);
-      if (!res.ok) throw new Error('Failed to fetch products');
+      // Use the direct API path
+      const endpoint = `/api/products?page=${currentPage}&limit=${productsPerPage}`;
+      console.log(`Fetching products from: ${endpoint}`);
+      const res = await fetch(endpoint);
       
-      const data = await res.json();
+      // Log response details
+      console.log(`API response status: ${res.status} ${res.statusText}`);
+      const contentType = res.headers.get('content-type');
+      console.log(`Content-Type: ${contentType}`);
+      
+      if (!res.ok) {
+        // Try to get error details as text first
+        const errorText = await res.text();
+        console.error('API error response:', errorText);
+        throw new Error(`Error: ${res.status} - ${errorText.substring(0, 100)}...`);
+      }
+      
+      // Get response as text first for debugging
+      const responseText = await res.text();
+      console.log('Products API response preview:', responseText.substring(0, 100));
+      
+      // Then parse it as JSON
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (parseError: any) {
+        console.error('JSON parse error:', parseError);
+        console.error('Response text:', responseText);
+        throw new Error(`Failed to parse API response as JSON: ${parseError?.message || 'Unknown parsing error'}`);
+      }
+      
       setProducts(data.products || []);
       setTotalPages(data.pagination?.totalPages || 1);
-      setCurrentPage(page);
+      console.log(`Loaded ${data.products?.length || 0} products out of ${data.total || 0} total`);
     } catch (err) {
+      console.error('Error fetching products:', err);
       setError(err instanceof Error ? err.message : 'Failed to load products');
     } finally {
       setIsLoading(false);
@@ -117,12 +150,29 @@ export default function AdminProducts() {
       });
       
       if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || 'Error uploading image');
+        let errorMessage;
+        try {
+          // Attempt to parse as JSON, but handle HTML responses
+          const errorData = await res.json();
+          errorMessage = errorData.message || `Error uploading image (${res.status})`;
+        } catch (jsonError) {
+          // If response isn't JSON, use status text
+          console.error('Non-JSON error response:', jsonError);
+          errorMessage = `Upload failed: ${res.status} ${res.statusText}`;
+        }
+        throw new Error(errorMessage);
       }
       
-      const data = await res.json();
-      return data.fileUrl;
+      // Use a separate variable for response text before parsing to help debug
+      const responseText = await res.text();
+      let data;
+      try {
+        data = JSON.parse(responseText);
+        return data.fileUrl;
+      } catch (parseError) {
+        console.error('Error parsing response as JSON:', parseError, '\nResponse text:', responseText);
+        throw new Error('Invalid response format from server');
+      }
     } catch (error) {
       console.error('Image upload error:', error);
       setError(error instanceof Error ? error.message : 'Failed to upload image');
@@ -222,12 +272,25 @@ export default function AdminProducts() {
       console.debug('Sending delete request for product ID:', productToDelete);
       
       // Special handling for empty ID products
-      const endpoint = productToDelete === '' 
-        ? `/api/products/empty-id` // Special endpoint to delete products with empty IDs
-        : `/api/products?id=${encodeURIComponent(productToDelete)}`;
+      let endpoint, method;
+      if (productToDelete === '') {
+        // Use the special endpoint for empty IDs
+        endpoint = `/api/products/empty-id`;
+        method = 'DELETE';
+      } else {
+        // For normal product deletion, include ID in the body
+        endpoint = `/api/products`;
+        method = 'DELETE';
+      }
+      
+      console.log(`Deleting product with ID: "${productToDelete}" using endpoint: ${endpoint}`);
       
       const res = await fetch(endpoint, {
-        method: 'DELETE'
+        method: method,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id: productToDelete })
       });
       
       if (!res.ok) {

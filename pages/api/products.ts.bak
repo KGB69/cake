@@ -5,88 +5,25 @@ import path from 'path';
 const filePath = path.join(process.cwd(), 'data', 'products.json');
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  // Ensure data directory exists
-  const dataDir = path.join(process.cwd(), 'data');
-  if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true });
-    // Create empty products file if it doesn't exist
-    if (!fs.existsSync(filePath)) {
-      fs.writeFileSync(filePath, JSON.stringify([], null, 2));
-    }
-  }
-
-  // Process DELETE differently to use body instead of query
-  if (req.method === 'DELETE') {
-    try {
-      // Read request body for ID
-      const productId = req.body?.id;
-      
-      console.log('DELETE request received with body:', req.body);
-      console.log('Product ID to delete:', productId);
-      
-      if (!productId && productId !== '') {
-        return res.status(400).json({ error: 'Product ID is required' });
-      }
-      
-      // Read products file
-      const data = fs.readFileSync(filePath, 'utf8');
-      let products = JSON.parse(data);
-      const initialLength = products.length;
-
-      // Use strict string comparison
-      const stringId = String(productId).trim();
-      console.log('Trying to delete product with ID (stringified):', stringId);
-      
-      // Filter out the product to delete
-      products = products.filter((product: any) => {
-        const productIdStr = String(product.id).trim();
-        const matches = productIdStr !== stringId;
-        if (!matches) {
-          console.log('Found matching product to delete:', product);
-        }
-        return matches;
-      });
-
-      if (products.length < initialLength) {
-        fs.writeFileSync(filePath, JSON.stringify(products, null, 2));
-        res.status(200).json({ message: 'Product deleted', id: stringId });
-      } else {
-        console.log('No product found with ID:', stringId);
-        console.log('Available product IDs:', products.map((p: any) => String(p.id).trim()));
-        res.status(404).json({ error: 'Product not found' });
-      }
-    } catch (error) {
-      console.error('Error deleting product:', error);
-      res.status(500).json({ error: 'Failed to delete product' });
-    }
-    return;
-  }
-
-  // Handle GET, POST, PUT methods
   if (req.method === 'GET') {
     try {
-      // Check if file exists before reading
-      if (!fs.existsSync(filePath)) {
-        fs.writeFileSync(filePath, JSON.stringify([], null, 2));
-      }
-
       const data = fs.readFileSync(filePath, 'utf8');
       let products = JSON.parse(data);
-
+      
       // Filter by featured status if requested
       const featuredOnly = req.query.featured === 'true';
       if (featuredOnly) {
         products = products.filter((product: any) => product.featured === true);
       }
-
+      
       // Filter by category if provided
       const category = req.query.category as string;
       if (category && category !== 'all') {
-        products = products.filter((product: any) =>
+        products = products.filter((product: any) => 
           product.category?.toLowerCase() === category.toLowerCase()
         );
       }
-
+      
       // Filter by stock status if provided
       const stockStatus = req.query.stockStatus as string;
       if (stockStatus) {
@@ -105,7 +42,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
             break;
         }
       }
-
+      
       // Sort by stock level if requested
       const sortBy = req.query.sortBy as string;
       if (sortBy === 'stock-asc') {
@@ -113,21 +50,21 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       } else if (sortBy === 'stock-desc') {
         products.sort((a: any, b: any) => (b.stock || 0) - (a.stock || 0));
       }
-
+      
       // Get unique categories for category browsing
       const categories = Array.from(
         new Set(JSON.parse(data).map((product: any) => product.category))
       );
-
+      
       // Handle pagination
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
       const startIndex = (page - 1) * limit;
       const endIndex = page * limit;
-
+      
       const paginatedProducts = products.slice(startIndex, endIndex);
       const totalPages = Math.ceil(products.length / limit);
-
+      
       res.status(200).json({
         products: paginatedProducts,
         categories,
@@ -139,30 +76,17 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
         }
       });
     } catch (error) {
-      console.error('Error reading products:', error);
       res.status(500).json({ error: 'Failed to read products' });
     }
   } else if (req.method === 'POST') {
     const newProduct = req.body;
-
-    // Generate a unique ID for the new product using timestamp
-    if (!newProduct.id) {
-      newProduct.id = `prod_${Date.now()}`;
-    }
-
     try {
-      // Create empty file if it doesn't exist
-      if (!fs.existsSync(filePath)) {
-        fs.writeFileSync(filePath, JSON.stringify([], null, 2));
-      }
-
       const data = fs.readFileSync(filePath, 'utf8');
       const products = JSON.parse(data);
       products.push(newProduct);
       fs.writeFileSync(filePath, JSON.stringify(products, null, 2));
       res.status(201).json(newProduct);
     } catch (error) {
-      console.error('Error adding product:', error);
       res.status(500).json({ error: 'Failed to add product' });
     }
   } else if (req.method === 'PUT') {
@@ -170,23 +94,67 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     try {
       const data = fs.readFileSync(filePath, 'utf8');
       let products = JSON.parse(data);
-
+      products = products.map((product: any) => product.id === id ? { ...product, ...updatedProduct } : product);
+      fs.writeFileSync(filePath, JSON.stringify(products, null, 2));
+      res.status(200).json(updatedProduct);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to update product' });
+    }
+  } else if (req.method === 'DELETE') {
+    try {
+      // Extract ID from request body
+      const body = req.body;
+      const id = body?.id;
+      
+      if (id === undefined) {
+        console.error('DELETE request missing ID in body');
+        return res.status(400).json({ error: 'Product ID is required' });
+      }
+      
+      const data = fs.readFileSync(filePath, 'utf8');
+      let products = JSON.parse(data);
+      const initialLength = products.length;
+      
+      // Log the ID we're trying to delete for debugging
+      console.log('Attempting to delete product with ID:', id, 'Type:', typeof id);
+      
+      // Ensure we have a consistent ID format for comparison
       const stringId = String(id).trim();
-
-      // Find the product by ID
-      const productIndex = products.findIndex((p: any) => String(p.id).trim() === stringId);
-
-      if (productIndex === -1) {
+      
+      // Log before deletion
+      console.log(`Before deletion: ${products.length} products`);
+      
+      // Find the product to delete
+      const productToDelete = products.find((product: any) => String(product.id).trim() === stringId);
+      
+      if (!productToDelete) {
+        console.log('Product not found with ID:', stringId);
         return res.status(404).json({ error: 'Product not found' });
       }
-
-      // Update the product
-      products[productIndex] = { ...products[productIndex], ...updatedProduct, id };
-      fs.writeFileSync(filePath, JSON.stringify(products, null, 2));
-      res.status(200).json(products[productIndex]);
+      
+      console.log('Deleting product:', productToDelete.name, 'with ID:', productToDelete.id);
+      
+      // Apply strict string comparison to keep all products EXCEPT the one to delete
+      products = products.filter((product: any) => {
+        const productIdStr = String(product.id).trim();
+        return productIdStr !== stringId;
+      });
+      
+      // Log after deletion
+      console.log(`After deletion: ${products.length} products`);
+      
+      if (products.length < initialLength) {
+        fs.writeFileSync(filePath, JSON.stringify(products, null, 2));
+        res.status(200).json({ 
+          message: 'Product deleted',
+          deletedProduct: productToDelete
+        });
+      } else {
+        res.status(404).json({ error: 'Product not found' });
+      }
     } catch (error) {
-      console.error('Error updating product:', error);
-      res.status(500).json({ error: 'Failed to update product' });
+      console.error('Error deleting product:', error);
+      res.status(500).json({ error: 'Failed to delete product' });
     }
   } else {
     res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
