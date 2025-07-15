@@ -2,6 +2,7 @@
   "dependencies": {
     "@types/formidable": "^3.4.5",
     "@types/react-dom": "^19.1.6",
+    "cookie": "^1.0.2",
     "formidable": "^3.5.4",
     "next": "^15.3.5",
     "nodemailer": "^7.0.5",

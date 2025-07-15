@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import AdminNavigation from '@/components/AdminNav/AdminNavigation';
-import styles from './Admin.module.css';
+import AdminNavigation from '@/components/AdminNavigation';
+import styles from '../../styles/Admin.module.css';
 import dashboardStyles from '../../styles/Dashboard.module.css';
 import { Order } from '@/types/order';
 import { Product } from '@/types/product';
@@ -41,7 +41,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     // Check if user is logged in
-    const isLoggedIn = typeof window !== 'undefined' && sessionStorage.getItem('adminLoggedIn') === 'true';
+    const isLoggedIn = typeof window !== 'undefined' && sessionStorage.getItem('isAdminLoggedIn') === 'true';
     
     if (!isLoggedIn) {
       router.push('/admin/login');

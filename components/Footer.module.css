@@ -2,6 +2,27 @@
   background-color: #4a1a6a; /* Dark purple */
   color: white;
   text-align: center;
-  padding: 1rem;
+  padding: 20px;
   margin-top: 2rem;
+}
+
+.footerContent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.adminLink {
+  font-size: 0.8rem;
+  color: #ffffff;
+  text-decoration: none;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.adminLink:hover {
+  opacity: 1;
+  text-decoration: underline;
 }
