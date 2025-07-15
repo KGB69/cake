@@ -77,10 +77,8 @@ export default function Home() {
         <div className={styles.heroContent}>
           <h1>{homepageContent?.heroTitle || 'Welcome to Cakelandia'}</h1>
           <p>{homepageContent?.heroSubtitle || 'Delicious pastries for every occasion'}</p>
-          <Link href="/shop" passHref legacyBehavior>
-            <a className={styles.heroButton}>
-              {homepageContent?.heroButtonText || 'Shop Now'}
-            </a>
+          <Link href="/shop" className={styles.heroButton}>
+            {homepageContent?.heroButtonText || 'Shop Now'}
           </Link>
         </div>
       </section>
@@ -108,8 +106,8 @@ export default function Home() {
             </div>
           )}
           <div className={styles.viewAllContainer}>
-            <Link href="/shop" passHref legacyBehavior>
-              <a className={styles.viewAllButton}>View All Products</a>
+            <Link href="/shop" className={styles.viewAllButton}>
+              View All Products
             </Link>
           </div>
         </div>
@@ -128,14 +126,11 @@ export default function Home() {
                 <div key={category}>
                   <Link 
                     href={`/shop?category=${category}`}
-                    passHref
-                    legacyBehavior
+                    className={styles.categoryCard}
                   >
-                    <a className={styles.categoryCard}>
-                      <div className={styles.categoryName}>
-                        {category}
-                      </div>
-                    </a>
+                    <div className={styles.categoryName}>
+                      {category}
+                    </div>
                   </Link>
                 </div>
               ))}
@@ -172,11 +167,11 @@ export default function Home() {
           <h2>Ready to Order Your Perfect Pastry?</h2>
           <p>Contact us for custom orders, special events, and catering options</p>
           <div className={styles.ctaButtons}>
-            <Link href="/shop" passHref legacyBehavior>
-              <a className={styles.primaryButton}>Shop Now</a>
+            <Link href="/shop" className={styles.primaryButton}>
+              Shop Now
             </Link>
-            <Link href="/cart" passHref legacyBehavior>
-              <a className={styles.secondaryButton}>View Cart</a>
+            <Link href="/cart" className={styles.secondaryButton}>
+              View Cart
             </Link>
           </div>
         </div>

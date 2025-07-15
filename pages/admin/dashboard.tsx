@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import AdminNavigation from '@/components/admin/AdminNavigation';
-import styles from '@/styles/Admin.module.css';
-import dashboardStyles from '@/styles/Dashboard.module.css';
+import AdminNavigation from '@/components/AdminNav/AdminNavigation';
+import styles from './Admin.module.css';
+import dashboardStyles from '../../styles/Dashboard.module.css';
 import { Order } from '@/types/order';
 import { Product } from '@/types/product';
 
@@ -186,7 +186,7 @@ export default function Dashboard() {
       </Head>
       
       <div className={styles.adminContainer}>
-        <AdminNavigation activePage="dashboard" />
+        <AdminNavigation />
         
         <div className={styles.adminContent}>
           <div className={styles.adminHeader}>

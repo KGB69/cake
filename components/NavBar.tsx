@@ -11,20 +11,20 @@ export default function NavBar() {
   return (
     <nav className={styles.nav}>
       <div className={styles.navItem}>
-        <Link href="/" passHref legacyBehavior>
-          <a className={currentPath === '/' ? styles.active : ''}>Home</a>
+        <Link href="/" className={currentPath === '/' ? styles.active : ''}>
+          Home
         </Link>
       </div>
       
       <div className={styles.navItem}>
-        <Link href="/shop" passHref legacyBehavior>
-          <a className={currentPath === '/shop' ? styles.active : ''}>Shop</a>
+        <Link href="/shop" className={currentPath === '/shop' ? styles.active : ''}>
+          Shop
         </Link>
       </div>
       
       <div className={styles.navItem}>
-        <Link href="/cart" passHref legacyBehavior>
-          <a className={currentPath === '/cart' ? styles.active : ''}>Cart</a>
+        <Link href="/cart" className={currentPath === '/cart' ? styles.active : ''}>
+          Cart
         </Link>
       </div>
     </nav>

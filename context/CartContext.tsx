@@ -29,7 +29,20 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const removeFromCart = (productId: string) => {
-    setCartItems((prevItems) => prevItems.filter(item => item.id !== productId));
+    if (!productId) {
+      console.error('Attempted to remove item with invalid ID:', productId);
+      return;
+    }
+    
+    setCartItems((prevItems) => {
+      // Log before removal for debugging
+      if (prevItems.length > 0 && !prevItems.some(item => item.id === productId)) {
+        console.warn('Item not found in cart with ID:', productId);
+        console.debug('Current cart items:', prevItems);
+      }
+      
+      return prevItems.filter(item => item.id !== productId);
+    });
   };
 
   const clearCart = () => {
@@ -37,11 +50,23 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const updateCartItemQuantity = (productId: string, quantity: number) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
+    if (!productId) {
+      console.error('Attempted to update item with invalid ID:', productId);
+      return;
+    }
+    
+    setCartItems((prevItems) => {
+      // Check if the item exists before updating
+      const itemExists = prevItems.some(item => item.id === productId);
+      if (!itemExists) {
+        console.warn('Item not found in cart for quantity update with ID:', productId);
+        return prevItems;
+      }
+      
+      return prevItems.map((item) =>
         item.id === productId ? { ...item, quantity: quantity } : item
-      )
-    );
+      );
+    });
   };
 
   return (

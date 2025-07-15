@@ -197,16 +197,36 @@ export default function AdminProducts() {
     document.getElementById('productForm')?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const openDeleteModal = (id: string) => {
+  const openDeleteModal = (id: string, productName?: string) => {
+    console.debug('Attempting to delete product with ID:', id, 'Name:', productName);
+    
+    // Check for empty ID
+    if (!id) {
+      console.warn('Product has an empty ID:', productName);
+    }
+    
     setProductToDelete(id);
     setIsDeleteModalOpen(true);
   };
 
   const handleDelete = async () => {
-    if (!productToDelete) return;
+    // For products with empty IDs, productToDelete will be an empty string
+    // which is falsy but valid for our delete operation
+    if (productToDelete === null || productToDelete === undefined) {
+      console.error('No product ID to delete (null or undefined)');
+      setIsDeleteModalOpen(false);
+      return;
+    }
     
     try {
-      const res = await fetch(`/api/products?id=${productToDelete}`, {
+      console.debug('Sending delete request for product ID:', productToDelete);
+      
+      // Special handling for empty ID products
+      const endpoint = productToDelete === '' 
+        ? `/api/products/empty-id` // Special endpoint to delete products with empty IDs
+        : `/api/products?id=${encodeURIComponent(productToDelete)}`;
+      
+      const res = await fetch(endpoint, {
         method: 'DELETE'
       });
       
@@ -218,8 +238,10 @@ export default function AdminProducts() {
       setSuccess('Product deleted successfully!');
       fetchProducts(); // Refresh product list
     } catch (err) {
+      console.error('Delete error:', err);
       setError(err instanceof Error ? err.message : 'Unknown error occurred');
     } finally {
+      setIsDeleteModalOpen(false);
       setProductToDelete(null);
     }
   };
@@ -417,8 +439,12 @@ export default function AdminProducts() {
                     </tr>
                   </thead>
                   <tbody>
-                    {products.map((product) => (
-                      <tr key={product.id} className={product.stock === 0 ? styles.outOfStock : (product.stock || 0) <= 5 ? styles.lowStock : ''}>
+                    {products.map((product, index) => {
+                      // Ensure we have a valid key by combining id and index
+                      const productKey = `product-row-${product.id || ''}-${index}`;
+                      
+                      return (
+                      <tr key={productKey} className={product.stock === 0 ? styles.outOfStock : (product.stock || 0) <= 5 ? styles.lowStock : ''}>
                         <td>
                           {product.image ? (
                             <img 
@@ -462,13 +488,30 @@ export default function AdminProducts() {
                           </button>
                           <button 
                             className={styles.deleteButton} 
-                            onClick={() => openDeleteModal(product.id)}
+                            onClick={() => {
+                              // For products with empty IDs, offer a direct delete option
+                              if (product.id === '') {
+                                if (confirm(`This product (${product.name}) has an empty ID. Delete directly?`)) {
+                                  // Direct deletion for empty ID products
+                                  fetch('/api/products/empty-id', { method: 'DELETE' })
+                                    .then(res => res.json())
+                                    .then(data => {
+                                      setSuccess(`Deleted ${data.deletedCount} products with empty IDs`);
+                                      fetchProducts();
+                                    })
+                                    .catch(err => setError('Failed to delete: ' + err.message));
+                                }
+                              } else {
+                                openDeleteModal(product.id, product.name);
+                              }
+                            }}
                           >
                             Delete
                           </button>
                         </td>
                       </tr>
-                    ))}
+                    );
+                    })}
                   </tbody>
                 </table>
                 

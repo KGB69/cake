@@ -367,49 +367,61 @@ export default function Cart() {
         ) : (
           <div className={styles.cartContent} key="cart-content-container">
             <ul className={styles.itemsList}>
-              {cartItems.map(item => (
-                <li key={item.id} className={styles.item}>
-                  <div className={styles.itemImage}>
-                    {item.image ? (
-                      <img src={item.image} alt={item.name} />
-                    ) : (
-                      <div className={styles.noImage}>No Image</div>
-                    )}
-                  </div>
-                  <div className={styles.itemDetails}>
-                    <h3>{item.name}</h3>
-                    <p className={styles.itemPrice}>${item.price.toFixed(2)}</p>
-                    <p className={styles.itemCategory}>{item.category}</p>
-                  </div>
-                  <div className={styles.itemQuantity}>
+              {cartItems.map((item, index) => {
+                // Ensure we have a valid key by combining id and index
+                const itemKey = `cart-item-${item.id || ''}-${index}`;
+                
+                return (
+                  <li key={itemKey} className={styles.item}>
+                    <div className={styles.itemImage}>
+                      {item.image ? (
+                        <img src={item.image} alt={item.name} />
+                      ) : (
+                        <div className={styles.noImage}>No Image</div>
+                      )}
+                    </div>
+                    <div className={styles.itemDetails}>
+                      <h3>{item.name}</h3>
+                      <p className={styles.itemPrice}>${item.price.toFixed(2)}</p>
+                      <p className={styles.itemCategory}>{item.category}</p>
+                    </div>
+                    <div className={styles.itemQuantity}>
+                      <button 
+                        className={styles.quantityButton}
+                        onClick={() => updateCartItemQuantity(item.id, Math.max(1, item.quantity - 1))}
+                        disabled={item.quantity <= 1}
+                      >
+                        -
+                      </button>
+                      <span>{item.quantity}</span>
+                      <button 
+                        className={styles.quantityButton}
+                        onClick={() => updateCartItemQuantity(item.id, item.quantity + 1)}
+                        disabled={item.stock !== undefined && item.quantity >= item.stock}
+                      >
+                        +
+                      </button>
+                    </div>
+                    <div className={styles.itemSubtotal}>
+                      ${(item.price * item.quantity).toFixed(2)}
+                    </div>
                     <button 
-                      className={styles.quantityButton}
-                      onClick={() => updateCartItemQuantity(item.id, Math.max(1, item.quantity - 1))}
-                      disabled={item.quantity <= 1}
+                      className={styles.removeButton} 
+                      onClick={() => {
+                        // Ensure the ID is valid before removing
+                        if (item.id) {
+                          removeFromCart(item.id);
+                        } else {
+                          console.error('Attempted to remove item without valid ID');
+                        }
+                      }}
+                      aria-label="Remove item"
                     >
-                      -
+                      ×
                     </button>
-                    <span>{item.quantity}</span>
-                    <button 
-                      className={styles.quantityButton}
-                      onClick={() => updateCartItemQuantity(item.id, item.quantity + 1)}
-                      disabled={item.stock !== undefined && item.quantity >= item.stock}
-                    >
-                      +
-                    </button>
-                  </div>
-                  <div className={styles.itemSubtotal}>
-                    ${(item.price * item.quantity).toFixed(2)}
-                  </div>
-                  <button 
-                    className={styles.removeButton} 
-                    onClick={() => removeFromCart(item.id)}
-                    aria-label="Remove item"
-                  >
-                    ×
-                  </button>
-                </li>
-              ))}
+                  </li>
+                );
+              })}
             </ul>
 
             <div className={styles.cartSummary}>
