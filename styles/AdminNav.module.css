@@ -1,0 +1,101 @@
+.adminNavigation {
+  background-color: #fff;
+  width: 250px;
+  height: 100%;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+  padding: 2rem 0;
+}
+
+.logo {
+  padding: 0 1.5rem 2rem;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logo a {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #663399;
+  text-decoration: none;
+  margin-bottom: 0.5rem;
+}
+
+.adminBadge {
+  font-size: 0.7rem;
+  background-color: #663399;
+  color: white;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+}
+
+.navList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.navList li {
+  margin-bottom: 0.5rem;
+}
+
+.navList a {
+  display: block;
+  padding: 0.75rem 1.5rem;
+  color: #555;
+  text-decoration: none;
+  transition: all 0.2s;
+  border-left: 4px solid transparent;
+}
+
+.navList a:hover {
+  background-color: #f6f0ff;
+  color: #663399;
+  border-left-color: #bfaddb;
+}
+
+.navList a.active {
+  background-color: #f6f0ff;
+  color: #663399;
+  border-left-color: #663399;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .adminNavigation {
+    width: 100%;
+    height: auto;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  }
+  
+  .logo {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .navList {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .navList li {
+    width: 50%;
+  }
+  
+  .navList a {
+    border-left: none;
+    border-bottom: 2px solid transparent;
+  }
+  
+  .navList a:hover, .navList a.active {
+    border-left-color: transparent;
+    border-bottom-color: #663399;
+  }
+}

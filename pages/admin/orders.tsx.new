@@ -1,0 +1,395 @@
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import Head from 'next/head';
+import styles from './Admin.module.css';
+import { Order, OrderStatus } from '@/types/order';
+import { checkAdminSession } from '../../utils/auth';
+import AdminNavigation from '@/components/AdminNav/AdminNavigation';
+
+export default function AdminOrders() {
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [statusFilter, setStatusFilter] = useState<OrderStatus | 'all'>('all');
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [updateStatusLoading, setUpdateStatusLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkAdmin = async () => {
+      const isAdmin = await checkAdminSession();
+      if (!isAdmin) {
+        router.push('/login');
+      }
+    };
+    
+    checkAdmin();
+  }, [router]);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [currentPage, statusFilter]);
+
+  const fetchOrders = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `/api/orders?page=${currentPage}&limit=10${statusFilter !== 'all' ? `&status=${statusFilter}` : ''}`
+      );
+      const data = await response.json();
+      
+      setOrders(data.orders);
+      setTotalPages(data.pagination.totalPages);
+    } catch (error) {
+      console.error('Failed to fetch orders:', error);
+      setError('Failed to load orders');
+      setTimeout(() => setError(''), 3000);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const viewOrderDetails = (order: Order) => {
+    setSelectedOrder(order);
+    setIsDetailModalOpen(true);
+  };
+
+  const closeOrderDetails = () => {
+    setIsDetailModalOpen(false);
+    setSelectedOrder(null);
+  };
+
+  const updateOrderStatus = async (orderId: string, newStatus: OrderStatus) => {
+    setUpdateStatusLoading(true);
+    try {
+      const response = await fetch(`/api/orders/${orderId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (response.ok) {
+        // Update the order in the local state
+        setOrders(orders.map(order => 
+          order.id === orderId ? { ...order, status: newStatus } : order
+        ));
+        
+        // If the updated order is the selected one, update it as well
+        if (selectedOrder && selectedOrder.id === orderId) {
+          setSelectedOrder({ ...selectedOrder, status: newStatus });
+        }
+        setSuccess(`Order status updated to ${newStatus} successfully`);
+        setTimeout(() => setSuccess(''), 3000);
+      } else {
+        setError('Failed to update order status');
+        setTimeout(() => setError(''), 3000);
+      }
+    } catch (error) {
+      setError('Error updating order status');
+      setTimeout(() => setError(''), 3000);
+    } finally {
+      setUpdateStatusLoading(false);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setStatusFilter(e.target.value as OrderStatus | 'all');
+    setCurrentPage(1); // Reset to first page when filter changes
+  };
+
+  const getStatusClass = (status: OrderStatus) => {
+    switch (status) {
+      case 'pending': return styles.statusPending;
+      case 'processing': return styles.statusProcessing;
+      case 'shipped': return styles.statusShipped;
+      case 'delivered': return styles.statusDelivered;
+      case 'cancelled': return styles.statusCancelled;
+      default: return '';
+    }
+  };
+  
+  const handleLogout = () => {
+    router.push('/admin');
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  return (
+    <>
+      <Head>
+        <title>Order Management | Admin | Cakelandia</title>
+      </Head>
+      <div className={styles.adminContainer}>
+        <header className={styles.adminHeader}>
+          <h1>Order Management</h1>
+          <div className={styles.headerButtons}>
+            <button 
+              onClick={handleLogout} 
+              className={styles.logoutButton}
+            >
+              Logout
+            </button>
+          </div>
+        </header>
+        
+        <AdminNavigation />
+        
+        {error && <div className={styles.error}>{error}</div>}
+        {success && <div className={styles.success}>{success}</div>}
+        
+        <div className={styles.adminContent}>
+          <div className={styles.filterSection}>
+            <div className={styles.filterGroup}>
+              <label htmlFor="statusFilter">Filter by Status:</label>
+              <select
+                id="statusFilter"
+                value={statusFilter}
+                onChange={handleFilterChange}
+                className={styles.filterSelect}
+              >
+                <option value="all">All Orders</option>
+                <option value="pending">Pending</option>
+                <option value="processing">Processing</option>
+                <option value="shipped">Shipped</option>
+                <option value="delivered">Delivered</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+          </div>
+
+          {loading ? (
+            <div className={styles.loadingContainer}>
+              <div className={styles.loadingSpinner}></div>
+              <p>Loading orders...</p>
+            </div>
+          ) : (
+            <div>
+              <h2>Orders List</h2>
+              
+              {orders.length === 0 ? (
+                <div className={styles.noOrdersMessage}>
+                  <p>No orders found{statusFilter !== 'all' ? ` with status: ${statusFilter}` : ''}.</p>
+                </div>
+              ) : (
+                <>
+                  <div className={styles.tableContainer}>
+                    <table className={styles.ordersTable}>
+                      <thead>
+                        <tr>
+                          <th>Order ID</th>
+                          <th>Date</th>
+                          <th>Customer</th>
+                          <th>Total</th>
+                          <th>Status</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {orders.map((order) => (
+                          <tr key={order.id}>
+                            <td>#{order.trackingNumber}</td>
+                            <td>{formatDate(order.createdAt)}</td>
+                            <td>{order.customerName}</td>
+                            <td>${order.total.toFixed(2)}</td>
+                            <td>
+                              <span className={`${styles.statusBadge} ${getStatusClass(order.status)}`}>
+                                {order.status}
+                              </span>
+                            </td>
+                            <td>
+                              <button 
+                                onClick={() => viewOrderDetails(order)} 
+                                className={styles.viewButton}
+                              >
+                                View Details
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  
+                  <div className={styles.pagination}>
+                    <button
+                      onClick={handlePreviousPage}
+                      disabled={currentPage <= 1}
+                      className={styles.paginationButton}
+                    >
+                      Previous
+                    </button>
+                    <span className={styles.paginationInfo}>
+                      Page {currentPage} of {totalPages}
+                    </span>
+                    <button
+                      onClick={handleNextPage}
+                      disabled={currentPage >= totalPages}
+                      className={styles.paginationButton}
+                    >
+                      Next
+                    </button>
+                  </div>
+                </>
+              )}
+              
+              {/* Order Detail Modal */}
+              {isDetailModalOpen && selectedOrder && (
+                <div className={styles.modalBackdrop}>
+                  <div className={styles.modalContent}>
+                    <div className={styles.modalHeader}>
+                      <h2>Order #{selectedOrder.trackingNumber}</h2>
+                      <button 
+                        onClick={closeOrderDetails} 
+                        className={styles.closeModalButton}
+                      >
+                        &times;
+                      </button>
+                    </div>
+                    
+                    <div className={styles.modalBody}>
+                      <div className={styles.orderDetailSection}>
+                        <h3>Customer Information</h3>
+                        <p><strong>Name:</strong> {selectedOrder.customerName}</p>
+                        <p><strong>Email:</strong> {selectedOrder.customerEmail}</p>
+                        {selectedOrder.customerPhone && (
+                          <p><strong>Phone:</strong> {selectedOrder.customerPhone}</p>
+                        )}
+                        <p><strong>Address:</strong> {selectedOrder.address}</p>
+                      </div>
+                      
+                      <div className={styles.orderDetailSection}>
+                        <h3>Order Details</h3>
+                        <p><strong>Date:</strong> {formatDate(selectedOrder.createdAt)}</p>
+                        <p>
+                          <strong>Status:</strong> 
+                          <span className={`${styles.statusBadge} ${getStatusClass(selectedOrder.status)}`}>
+                            {selectedOrder.status}
+                          </span>
+                        </p>
+                        {selectedOrder.notes && (
+                          <div>
+                            <strong>Notes:</strong>
+                            <p className={styles.orderNotes}>{selectedOrder.notes}</p>
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className={styles.orderDetailSection}>
+                        <h3>Order Items</h3>
+                        <table className={styles.orderItemsTable}>
+                          <thead>
+                            <tr>
+                              <th>Product</th>
+                              <th>Name</th>
+                              <th>Price</th>
+                              <th>Quantity</th>
+                              <th>Subtotal</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {selectedOrder.items.map((item, index) => (
+                              <tr key={index}>
+                                <td className={styles.productImageCell}>
+                                  <div className={styles.productImage}>
+                                    {item.product.image && (
+                                      <img src={item.product.image} alt={item.product.name} />
+                                    )}
+                                  </div>
+                                </td>
+                                <td>{item.product.name}</td>
+                                <td>${item.product.price.toFixed(2)}</td>
+                                <td>{item.quantity}</td>
+                                <td>${(item.product.price * item.quantity).toFixed(2)}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                          <tfoot>
+                            <tr>
+                              <td colSpan={4} className={styles.totalLabel}>Total:</td>
+                              <td className={styles.totalValue}>${selectedOrder.total.toFixed(2)}</td>
+                            </tr>
+                          </tfoot>
+                        </table>
+                      </div>
+                      
+                      <div className={styles.orderDetailSection}>
+                        <h3>Update Status</h3>
+                        <div className={styles.statusActions}>
+                          <button 
+                            onClick={() => updateOrderStatus(selectedOrder.id, 'pending')}
+                            className={`${styles.statusButton} ${styles.pendingButton}`}
+                            disabled={updateStatusLoading || selectedOrder.status === 'pending'}
+                          >
+                            Pending
+                          </button>
+                          <button 
+                            onClick={() => updateOrderStatus(selectedOrder.id, 'processing')}
+                            className={`${styles.statusButton} ${styles.processingButton}`}
+                            disabled={updateStatusLoading || selectedOrder.status === 'processing'}
+                          >
+                            Processing
+                          </button>
+                          <button 
+                            onClick={() => updateOrderStatus(selectedOrder.id, 'shipped')}
+                            className={`${styles.statusButton} ${styles.shippedButton}`}
+                            disabled={updateStatusLoading || selectedOrder.status === 'shipped'}
+                          >
+                            Shipped
+                          </button>
+                          <button 
+                            onClick={() => updateOrderStatus(selectedOrder.id, 'delivered')}
+                            className={`${styles.statusButton} ${styles.deliveredButton}`}
+                            disabled={updateStatusLoading || selectedOrder.status === 'delivered'}
+                          >
+                            Delivered
+                          </button>
+                          <button 
+                            onClick={() => updateOrderStatus(selectedOrder.id, 'cancelled')}
+                            className={`${styles.statusButton} ${styles.cancelledButton}`}
+                            disabled={updateStatusLoading || selectedOrder.status === 'cancelled'}
+                          >
+                            Cancelled
+                          </button>
+                        </div>
+                        {updateStatusLoading && (
+                          <div className={styles.loadingIndicator}>Updating status...</div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </>
+  );
+}

@@ -1,0 +1,320 @@
+.dashboardGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card h3 {
+  color: #666;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.cardValue {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #663399; /* Purple theme */
+}
+
+.wideCard {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  grid-column: span 2;
+  min-height: 300px;
+}
+
+.wideCard h3 {
+  color: #663399; /* Purple theme */
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.productPerformance {
+  grid-column: span 4;
+}
+
+.productTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.productTable th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  color: #666;
+  font-weight: 600;
+  border-bottom: 2px solid #eee;
+}
+
+.productTable td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #eee;
+  color: #444;
+}
+
+.productTable tr:last-child td {
+  border-bottom: none;
+}
+
+.productTable tr:hover {
+  background-color: #f9f5ff; /* Very light purple */
+}
+
+.noData {
+  padding: 2rem;
+  text-align: center;
+  color: #888;
+  font-style: italic;
+}
+
+.orderStatusChart {
+  margin-top: 1.5rem;
+}
+
+.chartBar {
+  height: 30px;
+  background-color: #f0f0f0;
+  border-radius: 15px;
+  overflow: hidden;
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+.completedBar {
+  height: 100%;
+  background-color: #663399; /* Purple theme */
+}
+
+.pendingBar {
+  height: 100%;
+  background-color: #ccb7e5; /* Light purple */
+}
+
+.chartLegend {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.completedIndicator, .pendingIndicator {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+}
+
+.completedIndicator {
+  background-color: #663399; /* Purple theme */
+}
+
+.pendingIndicator {
+  background-color: #ccb7e5; /* Light purple */
+}
+
+.timeRangeSelector {
+  display: flex;
+  flex-direction: column;
+  margin: 1.5rem 0;
+}
+
+.timeRangeSelector span {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #666;
+}
+
+.timeButtons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.timeButtons button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  background-color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.timeButtons button:hover {
+  border-color: #663399; /* Purple theme */
+  color: #663399; /* Purple theme */
+}
+
+.timeButtons button.active {
+  background-color: #663399; /* Purple theme */
+  color: white;
+  border-color: #663399; /* Purple theme */
+}
+
+/* Inventory Alerts Styling */
+.inventoryAlerts {
+  grid-column: span 4;
+}
+
+.inventoryCards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.inventoryCard {
+  background-color: #f9f9f9;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.inventoryCard h4 {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.outOfStockValue {
+  color: #e53935; /* Red color for out of stock */
+}
+
+.lowStockValue {
+  color: #ff9800; /* Orange color for low stock */
+}
+
+.lowStockTable {
+  margin-top: 1.5rem;
+}
+
+.lowStockTable h4 {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  color: #666;
+}
+
+.lowStockTable table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.lowStockTable th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  color: #666;
+  font-weight: 600;
+  border-bottom: 2px solid #eee;
+}
+
+.lowStockTable td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.stockBadge {
+  display: inline-block;
+  min-width: 24px;
+  padding: 0.25rem 0.5rem;
+  text-align: center;
+  background-color: #ff9800; /* Orange for low stock */
+  color: white;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 0.85rem;
+}
+
+.editLink {
+  color: #663399;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.editLink:hover {
+  text-decoration: underline;
+}
+
+.noAlerts {
+  padding: 1rem;
+  text-align: center;
+  color: #888;
+  font-style: italic;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .dashboardGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .productPerformance, .inventoryAlerts {
+    grid-column: span 2;
+  }
+  
+  .inventoryCards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboardGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .card, .wideCard, .productPerformance, .inventoryAlerts {
+    grid-column: span 1;
+  }
+  
+  .inventoryCards {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .inventoryCard {
+    padding: 0.75rem;
+  }
+  
+  .lowStockTable table {
+    font-size: 0.9rem;
+  }
+  
+  .lowStockTable td, .lowStockTable th {
+    padding: 0.5rem;
+  }
+  
+  .timeButtons {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .timeButtons button {
+    width: 100%;
+  }
+}

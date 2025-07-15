@@ -1,0 +1,172 @@
+[
+  {
+    "id": "order-1001",
+    "trackingNumber": "CK-1001-2025",
+    "customerName": "John Smith",
+    "customerEmail": "john.smith@example.com",
+    "customerPhone": "555-123-4567",
+    "address": "123 Main St, Anytown, CA 94001",
+    "items": [
+      {
+        "product": {
+          "id": "1",
+          "title": "Chocolate Cake",
+          "description": "Rich chocolate cake with creamy frosting",
+          "price": 32.99,
+          "imageUrl": "/uploads/chocolate-cake.jpg",
+          "category": "cake",
+          "featured": true
+        },
+        "quantity": 1
+      },
+      {
+        "product": {
+          "id": "3",
+          "title": "Blueberry Muffins",
+          "description": "Fresh muffins with real blueberries",
+          "price": 12.99,
+          "imageUrl": "/uploads/blueberry-muffins.jpg",
+          "category": "pastry",
+          "featured": false
+        },
+        "quantity": 6
+      }
+    ],
+    "total": 110.93,
+    "status": "delivered",
+    "createdAt": "2025-07-10T14:30:00.000Z",
+    "updatedAt": "2025-07-11T16:45:00.000Z",
+    "notes": "Please leave at door"
+  },
+  {
+    "id": "order-1002",
+    "trackingNumber": "CK-1002-2025",
+    "customerName": "Emily Johnson",
+    "customerEmail": "emily.j@example.com",
+    "customerPhone": "555-234-5678",
+    "address": "456 Oak Ave, Springfield, IL 62701",
+    "items": [
+      {
+        "product": {
+          "id": "2",
+          "title": "Vanilla Cheesecake",
+          "description": "Creamy vanilla cheesecake with graham cracker crust",
+          "price": 28.99,
+          "imageUrl": "/uploads/vanilla-cheesecake.jpg",
+          "category": "cheesecake",
+          "featured": true
+        },
+        "quantity": 2
+      }
+    ],
+    "total": 57.98,
+    "status": "shipped",
+    "createdAt": "2025-07-11T10:15:00.000Z",
+    "updatedAt": "2025-07-12T09:20:00.000Z"
+  },
+  {
+    "id": "order-1003",
+    "trackingNumber": "CK-1003-2025",
+    "customerName": "Michael Brown",
+    "customerEmail": "michael.b@example.com",
+    "customerPhone": "555-345-6789",
+    "address": "789 Maple Rd, Boston, MA 02108",
+    "items": [
+      {
+        "product": {
+          "id": "4",
+          "title": "Croissant",
+          "description": "Buttery, flaky croissant",
+          "price": 3.99,
+          "imageUrl": "/uploads/croissant.jpg",
+          "category": "pastry",
+          "featured": false
+        },
+        "quantity": 12
+      },
+      {
+        "product": {
+          "id": "5",
+          "title": "Cinnamon Roll",
+          "description": "Freshly baked cinnamon roll with cream cheese frosting",
+          "price": 4.99,
+          "imageUrl": "/uploads/cinnamon-roll.jpg",
+          "category": "pastry",
+          "featured": false
+        },
+        "quantity": 6
+      }
+    ],
+    "total": 77.82,
+    "status": "processing",
+    "createdAt": "2025-07-12T16:45:00.000Z",
+    "updatedAt": "2025-07-12T17:30:00.000Z",
+    "notes": "Corporate order for meeting"
+  },
+  {
+    "id": "order-1004",
+    "trackingNumber": "CK-1004-2025",
+    "customerName": "Sarah Davis",
+    "customerEmail": "sarah.d@example.com",
+    "customerPhone": "555-456-7890",
+    "address": "101 Pine St, Seattle, WA 98101",
+    "items": [
+      {
+        "product": {
+          "id": "6",
+          "title": "Birthday Cake",
+          "description": "Festive birthday cake with sprinkles and candles",
+          "price": 42.99,
+          "imageUrl": "/uploads/birthday-cake.jpg",
+          "category": "cake",
+          "featured": true
+        },
+        "quantity": 1
+      }
+    ],
+    "total": 42.99,
+    "status": "pending",
+    "createdAt": "2025-07-13T09:30:00.000Z",
+    "updatedAt": "2025-07-15T11:27:22.919Z",
+    "notes": "Happy Birthday message: 'Happy 30th Birthday Jessica!'"
+  },
+  {
+    "id": "order-1005",
+    "trackingNumber": "CK-1005-2025",
+    "customerName": "Robert Wilson",
+    "customerEmail": "robert.w@example.com",
+    "customerPhone": "555-567-8901",
+    "address": "222 Cedar Blvd, Austin, TX 78701",
+    "items": [
+      {
+        "product": {
+          "id": "7",
+          "title": "Apple Pie",
+          "description": "Classic apple pie with flaky crust",
+          "price": 24.99,
+          "imageUrl": "/uploads/apple-pie.jpg",
+          "category": "pie",
+          "featured": false
+        },
+        "quantity": 2
+      },
+      {
+        "product": {
+          "id": "8",
+          "title": "Chocolate Chip Cookies",
+          "description": "Fresh baked chocolate chip cookies",
+          "price": 1.99,
+          "imageUrl": "/uploads/chocolate-chip-cookies.jpg",
+          "category": "cookie",
+          "featured": false
+        },
+        "quantity": 24
+      }
+    ],
+    "total": 97.74,
+    "status": "cancelled",
+    "createdAt": "2025-07-09T11:15:00.000Z",
+    "updatedAt": "2025-07-09T14:20:00.000Z",
+    "notes": "Customer requested cancellation due to date change"
+  }
+]

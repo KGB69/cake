@@ -1,0 +1,53 @@
+body {
+  background-color: #f8f0fc; /* Light purple background */
+  color: #4a1a6a; /* Dark purple text for readability */
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.hero {
+  height: 96vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(to right, #ff69b4, #8a2be2); /* Pink to purple gradient */
+  color: white;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.hero h1 {
+  font-size: 2.5rem;
+}
+
+.hero p {
+  font-size: 1.25rem;
+  margin-top: 1rem;
+}
+
+.hero button {
+  margin-top: 2rem;
+  background-color: #ff69b4; /* Pink button */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.hero button:hover {
+  background-color: #8a2be2; /* Purple on hover */
+}
+
+@media (min-width: 768px) {
+  .hero, .container {
+    padding: 80px 10%;
+  }
+}

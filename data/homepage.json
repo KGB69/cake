@@ -1,0 +1,15 @@
+{
+  "content": [
+    {
+      "id": "hero-1752587461548",
+      "heroImage": "/uploads/image-1752587437602.jpg",
+      "heroTitle": "Welcome to Cakelandia",
+      "heroSubtitle": "Yummy pastries for any occasion",
+      "heroButtonText": "Order Now",
+      "heroButtonLink": "/shop",
+      "isActive": true,
+      "createdAt": "2025-07-15T13:51:01.549Z",
+      "updatedAt": "2025-07-15T13:51:01.549Z"
+    }
+  ]
+}

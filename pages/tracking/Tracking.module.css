@@ -1,0 +1,175 @@
+.trackingPage {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.trackingContainer {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+}
+
+.trackingForm {
+  margin-bottom: 2rem;
+}
+
+.formGroup {
+  margin-bottom: 1rem;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.formGroup input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.trackButton {
+  background-color: #e91e63;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.trackButton:hover {
+  background-color: #c2185b;
+}
+
+.trackButton:disabled {
+  background-color: #e0e0e0;
+  cursor: not-allowed;
+}
+
+.error {
+  color: #d32f2f;
+  margin-top: 1rem;
+}
+
+.orderInfo {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #eee;
+}
+
+.orderInfo h2 {
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.orderDetails {
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  padding: 1.5rem;
+}
+
+.orderDetails p {
+  margin-bottom: 1rem;
+}
+
+.statusContainer {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 50px;
+  color: white;
+  margin-left: 0.5rem;
+  font-weight: 500;
+}
+
+.statusTimeline {
+  margin-top: 2rem;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+}
+
+.statusTimeline::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #e0e0e0;
+  z-index: 1;
+}
+
+.statusStep {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  width: 25%;
+}
+
+.statusDot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  margin: 0 auto 0.5rem;
+}
+
+.statusStep p {
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.statusStep.completed .statusDot {
+  background-color: #4caf50;
+}
+
+@media (max-width: 600px) {
+  .trackingPage {
+    padding: 1rem;
+  }
+  
+  .statusTimeline {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .statusTimeline::before {
+    top: 0;
+    bottom: 0;
+    left: 8px;
+    right: auto;
+    width: 2px;
+    height: auto;
+  }
+  
+  .statusStep {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding-left: 30px;
+    margin-bottom: 1rem;
+  }
+  
+  .statusDot {
+    margin: 0 0.75rem 0 0;
+  }
+}
